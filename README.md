@@ -1,3 +1,15 @@
+## Why CivicLens?  
+CivicLens bridges communities and authorities, enabling faster, smarter, and more transparent action on civic issues.  
+It raises awareness, empowers citizens to report problems, and helps authorities respond efficiently, fostering safer and better-managed neighborhoods.  
+
+## Key Features  
+- **Secure Reporting** – Protects user data while ensuring accountability.  
+- **Interactive Map** – Visualizes reports in real time for quick understanding.  
+- **Advanced Filters** – Sort reports by type, priority, or location.  
+- **Admin Dashboard** – Monitor, manage, and act on reports seamlessly.  
+- **Community Empowerment** – Engages citizens, raises awareness, and contributes to a safer, organized environment.  
+
+
 ## CivicLens Backend
 
 Express + MongoDB API for authentication, crisis reporting, and admin status updates.
@@ -46,5 +58,24 @@ Run:
 ```
 npm run seed:admin
 ```
+
+
+## CivicLens Frontend
+
+React + Vite app with Tailwind, React Router, Axios, and Leaflet.
+
+### Setup
+
+1. Copy `.env.example` to `.env` and set `VITE_API_URL` and `VITE_GOOGLE_CLIENT_ID`.
+2. Install dependencies:
+```bash
+npm install
+```
+3. Run dev server:
+```bash
+npm run dev
+```
+
+
 
 
