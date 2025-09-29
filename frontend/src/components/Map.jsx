@@ -1,6 +1,7 @@
-import React from 'react'
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
+import React, { useRef, useState } from 'react'
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet'
 import L from 'leaflet'
+import LocationButton from './LocationButton.jsx'
 
 // Style config for severity markers (clean circular icons)
 function styleForUrgency(urgency) {
@@ -41,12 +42,33 @@ function LocationPicker({ onPick }) {
   return null
 }
 
-export default function Map({ reports = [], onPickLocation }) {
+// Component to handle map operations like panning to a location
+function MapController({ searchLocation }) {
+  const map = useMap();
+  
+  React.useEffect(() => {
+    if (searchLocation) {
+      map.setView([searchLocation.lat, searchLocation.lng], 15);
+    }
+  }, [searchLocation, map]);
+  
+  return null;
+}
+
+export default function Map({ reports = [], onPickLocation, searchLocation }) {
+  const [userLocation, setUserLocation] = useState(null);
   const center = reports[0]?.location ? [reports[0].location.lat, reports[0].location.lng] : [20, 0]
+  
+  const handleLocationFound = (location) => {
+    setUserLocation(location);
+  };
+  
   return (
     <MapContainer center={center} zoom={3} style={{ height: '400px', width: '100%' }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap contributors" />
       {onPickLocation && <LocationPicker onPick={onPickLocation} />}
+      <MapController searchLocation={searchLocation} />
+      <LocationButton onLocationFound={handleLocationFound} />
       {reports.map((r) => (
         <Marker key={r._id} position={[r.location.lat, r.location.lng]} icon={createSeverityIcon(r.urgency, r.category)}>
           <Popup>

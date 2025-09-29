@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import Map from '../components/Map.jsx'
+import SearchBar from '../components/SearchBar.jsx'
 import { fetchReports } from '../services/api.js'
 
 export default function Home() {
   const [reports, setReports] = useState([])
   const [filters, setFilters] = useState({ category: '', urgency: '' })
+  const [searchLocation, setSearchLocation] = useState(null)
 
   async function load() {
     const data = await fetchReports({ ...filters })
@@ -17,9 +19,14 @@ export default function Home() {
     e.preventDefault()
     await load()
   }
+  
+  function handleLocationFound(location) {
+    setSearchLocation(location)
+  }
 
   return (
     <div className="space-y-4">
+      <SearchBar onLocationFound={handleLocationFound} />
       <div className="bg-white p-4 rounded shadow">
         <form onSubmit={applyFilters} className="flex gap-3 items-end">
           <div>
@@ -39,7 +46,7 @@ export default function Home() {
           <button className="px-4 py-2 bg-blue-600 text-white rounded">Apply</button>
         </form>
       </div>
-      <Map reports={reports} />
+      <Map reports={reports} searchLocation={searchLocation} />
       <section className="bg-gray-50 rounded-lg shadow-sm border overflow-hidden animate-fadeIn">
         <div className="p-6 md:p-8 bg-white">
           <h2 className="text-2xl md:text-3xl font-bold text-blue-700">Why CivicLens?</h2>
