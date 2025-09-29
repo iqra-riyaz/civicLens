@@ -133,7 +133,15 @@ export async function updateReportStatus(req, res) {
     if (!['Pending', 'In Progress', 'Resolved'].includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
-    const report = await Report.findByIdAndUpdate(id, { status }, { new: true });
+    // Update status and set updatedAt to current time
+    const report = await Report.findByIdAndUpdate(
+      id, 
+      { 
+        status,
+        updatedAt: new Date() 
+      }, 
+      { new: true }
+    );
     if (!report) return res.status(404).json({ message: 'Report not found' });
     res.json(report);
   } catch (e) {

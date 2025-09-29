@@ -1,6 +1,16 @@
 import React from 'react'
 
 export default function ReportCard({ report, onUpdateStatus, canUpdate }) {
+  // Format date to a readable string
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+
   return (
     <div className="bg-white p-4 rounded shadow flex gap-4">
       {report.imageUrl && <img src={report.imageUrl} className="w-32 h-24 object-cover rounded" />}
@@ -11,6 +21,7 @@ export default function ReportCard({ report, onUpdateStatus, canUpdate }) {
         </div>
         <p className="text-sm text-gray-700">{report.description}</p>
         <div className="text-sm mt-1">{report.customCategory ? report.customCategory : report.category} • {report.urgency}</div>
+        <div className="text-xs text-gray-500 mt-1">Created: {formatDate(report.createdAt)}</div>
         {canUpdate && (
           <div className="mt-2 flex gap-2">
             {['Pending', 'In Progress', 'Resolved'].map(s => (
