@@ -67,6 +67,65 @@ export async function getMyReports(req, res) {
   }
 }
 
+export async function updateReport(req, res) {
+  try {
+    const { id } = req.params;
+    const { title, description, category, urgency, customCategory, location } = req.body;
+    
+    // Find report and verify ownership
+    const report = await Report.findById(id);
+    if (!report) return res.status(404).json({ message: 'Report not found' });
+    
+    // Only allow users to edit their own reports
+    if (report.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to edit this report' });
+    }
+    
+    // Update fields
+    report.title = title || report.title;
+    report.description = description || report.description;
+    report.category = category || report.category;
+    report.urgency = urgency || report.urgency;
+    
+    // Update location if provided
+    if (location && location.lat && location.lng) {
+      report.location = {
+        lat: Number(location.lat),
+        lng: Number(location.lng)
+      };
+    }
+    
+    if (category === 'Other' && customCategory) {
+      report.customCategory = customCategory;
+    }
+    
+    await report.save();
+    res.json(report);
+  } catch (e) {
+    res.status(500).json({ message: 'Failed to update report' });
+  }
+}
+
+export async function deleteReport(req, res) {
+  try {
+    const { id } = req.params;
+    
+    // Find report and verify ownership
+    const report = await Report.findById(id);
+    if (!report) return res.status(404).json({ message: 'Report not found' });
+    
+    // Only allow users to delete their own reports
+    if (report.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to delete this report' });
+    }
+    
+    await Report.findByIdAndDelete(id);
+    res.json({ message: 'Report deleted successfully' });
+  } catch (e) {
+    res.status(500).json({ message: 'Failed to delete report' });
+  }
+}
+
 export async function updateReportStatus(req, res) {
   try {
     const { id } = req.params;

@@ -54,6 +54,16 @@ export async function updateReportStatus(id, status) {
   return data
 }
 
+export async function updateReport(id, reportData) {
+  const { data } = await api.put(`/reports/${id}`, reportData)
+  return data
+}
+
+export async function deleteReport(id) {
+  const { data } = await api.delete(`/reports/${id}`)
+  return data
+}
+
 export default api
 
 
