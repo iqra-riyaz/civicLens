@@ -24,6 +24,10 @@ export default function Dashboard() {
     await load()
   }
 
+  async function onReportUpdated() {
+    await load()
+  }
+
   const isAdmin = user?.role === 'admin'
 
   return (
@@ -31,7 +35,13 @@ export default function Dashboard() {
       {!isAdmin && <ReportForm onCreated={onCreated} />}
       <div className="grid gap-3">
         {reports.map(r => (
-          <ReportCard key={r._id} report={r} canUpdate={isAdmin} onUpdateStatus={onUpdateStatus} />
+          <ReportCard 
+            key={r._id} 
+            report={r} 
+            canUpdate={isAdmin} 
+            onUpdateStatus={onUpdateStatus} 
+            onReportUpdated={onReportUpdated}
+          />
         ))}
       </div>
     </div>

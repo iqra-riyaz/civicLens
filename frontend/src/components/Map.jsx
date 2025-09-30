@@ -1,7 +1,9 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import LocationButton from './LocationButton.jsx'
+import { upvoteReport } from '../services/api'
+import { useAuth } from '../services/authContext'
 
 // Style config for severity markers (clean circular icons)
 function styleForUrgency(urgency) {
@@ -55,7 +57,58 @@ function MapController({ searchLocation }) {
   return null;
 }
 
-export default function Map({ reports = [], onPickLocation, searchLocation }) {
+// Report popup component with upvote functionality
+function ReportPopup({ report, onReportUpdated }) {
+  const { user } = useAuth();
+  const [upvoteCount, setUpvoteCount] = useState(report.upvotes || 0);
+  const [isUpvoting, setIsUpvoting] = useState(false);
+  const [hasUpvoted, setHasUpvoted] = useState(false);
+
+  useEffect(() => {
+    if (user && report.upvoters) {
+      setHasUpvoted(report.upvoters.includes(user._id));
+    }
+  }, [user, report.upvoters]);
+
+  const handleUpvote = async () => {
+    try {
+      setIsUpvoting(true);
+      const updatedReport = await upvoteReport(report._id);
+      setUpvoteCount(updatedReport.upvotes);
+      setHasUpvoted(!hasUpvoted);
+      if (onReportUpdated) {
+        onReportUpdated(report._id);
+      }
+    } catch (error) {
+      console.error('Failed to toggle upvote:', error);
+    } finally {
+      setIsUpvoting(false);
+    }
+  };
+
+  return (
+    <div className="space-y-1">
+      <div className="font-semibold">{report.title}</div>
+      <div className="text-sm">{report.customCategory ? report.customCategory : report.category} • {report.urgency} • {report.status}</div>
+      <p className="text-sm">{report.description}</p>
+      {report.imageUrl && <img src={report.imageUrl} className="mt-1 max-h-40" />}
+      <div className="flex justify-end mt-2">
+        <button 
+          onClick={handleUpvote} 
+          disabled={isUpvoting}
+          className={`flex items-center gap-1 text-sm px-2 py-1 rounded transition ${hasUpvoted ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 hover:bg-gray-200'}`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${hasUpvoted ? 'text-blue-600' : ''}`} fill={hasUpvoted ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+          </svg>
+          <span>{upvoteCount}</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function Map({ reports = [], onPickLocation, searchLocation, onReportUpdated }) {
   const [userLocation, setUserLocation] = useState(null);
   const center = reports[0]?.location ? [reports[0].location.lat, reports[0].location.lng] : [20, 0]
   
@@ -72,12 +125,7 @@ export default function Map({ reports = [], onPickLocation, searchLocation }) {
       {reports.map((r) => (
         <Marker key={r._id} position={[r.location.lat, r.location.lng]} icon={createSeverityIcon(r.urgency, r.category)}>
           <Popup>
-            <div className="space-y-1">
-              <div className="font-semibold">{r.title}</div>
-              <div className="text-sm">{r.customCategory ? r.customCategory : r.category} • {r.urgency} • {r.status}</div>
-              <p className="text-sm">{r.description}</p>
-              {r.imageUrl && <img src={r.imageUrl} className="mt-1 max-h-40" />}
-            </div>
+            <ReportPopup report={r} onReportUpdated={onReportUpdated} />
           </Popup>
         </Marker>
       ))}

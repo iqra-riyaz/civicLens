@@ -64,6 +64,11 @@ export async function deleteReport(id) {
   return data
 }
 
+export async function upvoteReport(id) {
+  const { data } = await api.post(`/reports/${id}/upvote`)
+  return data
+}
+
 export default api
 
 

@@ -23,6 +23,10 @@ export default function Home() {
   function handleLocationFound(location) {
     setSearchLocation(location)
   }
+  
+  async function onReportUpdated() {
+    await load()
+  }
 
   return (
     <div className="space-y-4">
@@ -46,7 +50,7 @@ export default function Home() {
           <button className="px-4 py-2 bg-blue-600 text-white rounded">Apply</button>
         </form>
       </div>
-      <Map reports={reports} searchLocation={searchLocation} />
+      <Map reports={reports} searchLocation={searchLocation} onReportUpdated={onReportUpdated} />
       <section className="bg-gray-50 rounded-lg shadow-sm border overflow-hidden animate-fadeIn">
         <div className="p-6 md:p-8 bg-white">
           <h2 className="text-2xl md:text-3xl font-bold text-blue-700">Why CivicLens?</h2>

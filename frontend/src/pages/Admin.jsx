@@ -17,6 +17,10 @@ export default function Admin() {
     await updateReportStatus(id, status)
     await load()
   }
+  
+  async function onReportUpdated() {
+    await load()
+  }
 
   return (
     <div className="space-y-4">
@@ -31,7 +35,13 @@ export default function Admin() {
       </div>
       <div className="grid gap-3">
         {reports.map(r => (
-          <ReportCard key={r._id} report={r} canUpdate={true} onUpdateStatus={onUpdateStatus} />
+          <ReportCard 
+            key={r._id} 
+            report={r} 
+            canUpdate={true} 
+            onUpdateStatus={onUpdateStatus} 
+            onReportUpdated={onReportUpdated}
+          />
         ))}
       </div>
     </div>

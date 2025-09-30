@@ -17,6 +17,9 @@ const reportSchema = new mongoose.Schema(
     imageUrl: { type: String },
     imagePublicId: { type: String },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    // Upvote feature
+    upvotes: { type: Number, default: 0 },
+    upvoters: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     // AI placeholders
     predictedCategory: { type: String },
     predictedSeverity: { type: String },

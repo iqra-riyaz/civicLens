@@ -3,7 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { requireAuth, requireAdmin } from '../middlewares/authMiddleware.js';
-import { createReport, getReports, getMyReports, updateReportStatus, updateReport, deleteReport } from '../controllers/reportController.js';
+import { createReport, getReports, getMyReports, updateReportStatus, updateReport, deleteReport, upvoteReport } from '../controllers/reportController.js';
 
 const router = Router();
 
@@ -27,6 +27,7 @@ router.post('/', requireAuth, upload.single('image'), createReport);
 router.patch('/:id/status', requireAuth, requireAdmin, updateReportStatus);
 router.put('/:id', requireAuth, updateReport);
 router.delete('/:id', requireAuth, deleteReport);
+router.post('/:id/upvote', requireAuth, upvoteReport);
 
 export default router;
 

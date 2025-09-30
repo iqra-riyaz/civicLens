@@ -149,4 +149,33 @@ export async function updateReportStatus(req, res) {
   }
 }
 
+export async function upvoteReport(req, res) {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+    
+    // Find report
+    const report = await Report.findById(id);
+    if (!report) return res.status(404).json({ message: 'Report not found' });
+    
+    // Check if user already upvoted
+    const userIndex = report.upvoters.indexOf(userId);
+    
+    if (userIndex !== -1) {
+      // User already upvoted, so remove the upvote
+      report.upvoters.splice(userIndex, 1);
+      report.upvotes -= 1;
+    } else {
+      // Add user to upvoters and increment upvote count
+      report.upvoters.push(userId);
+      report.upvotes += 1;
+    }
+    
+    await report.save();
+    res.json(report);
+  } catch (e) {
+    res.status(500).json({ message: 'Failed to toggle upvote' });
+  }
+}
+
 
