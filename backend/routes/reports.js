@@ -24,7 +24,7 @@ const upload = multer({ storage });
 router.get('/', getReports);
 router.get('/mine', requireAuth, getMyReports);
 router.post('/', requireAuth, upload.single('image'), createReport);
-router.patch('/:id/status', requireAuth, requireAdmin, updateReportStatus);
+router.patch('/:id/status', requireAuth, requireAdmin, upload.single('proofImage'), updateReportStatus);
 router.put('/:id', requireAuth, updateReport);
 router.delete('/:id', requireAuth, deleteReport);
 router.post('/:id/upvote', requireAuth, upvoteReport);

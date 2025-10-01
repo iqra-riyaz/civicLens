@@ -129,22 +129,53 @@ export async function deleteReport(req, res) {
 export async function updateReportStatus(req, res) {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, proofText } = req.body;
+    
     if (!['Pending', 'In Progress', 'Resolved'].includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
-    // Update status and set updatedAt to current time
+    
+    // Prepare update object
+    const updateData = {
+      status,
+      updatedAt: new Date()
+    };
+    
+    // Handle proof data for 'In Progress' or 'Resolved' statuses
+    if (['In Progress', 'Resolved'].includes(status)) {
+      // Initialize proof object if proof text or image is provided
+      if (proofText || req.file) {
+        updateData.proof = {};
+        
+        // Add proof text if provided
+        if (proofText) {
+          updateData.proof.text = proofText;
+        }
+        
+        // Handle image upload if provided
+        if (req.file) {
+          const result = await uploadToCloudinary(req.file.path);
+          updateData.proof.imageUrl = result.secure_url;
+          updateData.proof.imagePublicId = result.public_id;
+          updateData.proof.uploadedAt = new Date();
+          
+          // Remove temporary file
+          fs.unlinkSync(req.file.path);
+        }
+      }
+    }
+    
+    // Update report with new status and proof data
     const report = await Report.findByIdAndUpdate(
       id, 
-      { 
-        status,
-        updatedAt: new Date() 
-      }, 
+      updateData, 
       { new: true }
     );
+    
     if (!report) return res.status(404).json({ message: 'Report not found' });
     res.json(report);
   } catch (e) {
+    console.error(e);
     res.status(500).json({ message: 'Failed to update status' });
   }
 }

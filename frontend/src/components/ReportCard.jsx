@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { upvoteReport } from '../services/api'
 import { useAuth } from '../services/authContext'
+import StatusUpdateModal from './StatusUpdateModal'
 
-export default function ReportCard({ report, onUpdateStatus, canUpdate, onReportUpdated }) {
+export default function ReportCard({ report, onUpdateStatus, canUpdate, onReportUpdated, onDelete, editButton }) {
   const { user } = useAuth();
   const [upvoteCount, setUpvoteCount] = useState(report.upvotes || 0);
   const [isUpvoting, setIsUpvoting] = useState(false);
   const [hasUpvoted, setHasUpvoted] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(false);
 
   // Check if current user has already upvoted this report
   useEffect(() => {
@@ -42,9 +44,10 @@ export default function ReportCard({ report, onUpdateStatus, canUpdate, onReport
   };
 
   return (
-    <div className="bg-white p-4 rounded shadow flex gap-4">
-      {report.imageUrl && <img src={report.imageUrl} className="w-32 h-24 object-cover rounded" />}
-      <div className="flex-1">
+    <>
+      <div className="bg-white p-4 rounded shadow flex gap-4">
+        {report.imageUrl && <img src={report.imageUrl} className="w-32 h-24 object-cover rounded" />}
+        <div className="flex-1">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">{report.title}</h3>
           <span className="text-xs px-2 py-1 bg-gray-100 rounded">{report.status}</span>
@@ -66,16 +69,60 @@ export default function ReportCard({ report, onUpdateStatus, canUpdate, onReport
             </button>
           </div>
         </div>
-        {canUpdate && (
-          <div className="mt-2 flex gap-2">
-            {['Pending', 'In Progress', 'Resolved'].map(s => (
-              <button key={s} onClick={()=>onUpdateStatus(report._id, s)} className={`px-2 py-1 text-sm rounded border ${report.status===s?'bg-blue-600 text-white':'bg-white'}`}>{s}</button>
-            ))}
+        <div className="mt-2 flex gap-2">
+          {canUpdate && (
+            <button 
+              onClick={() => setShowStatusModal(true)} 
+              className="px-3 py-1 bg-blue-600 text-white text-sm rounded"
+            >
+              Update Status
+            </button>
+          )}
+          {onDelete && (
+            <button 
+              onClick={() => onDelete(report._id)} 
+              className="px-3 py-1 bg-red-600 text-white text-sm rounded"
+            >
+              Delete
+            </button>
+          )}
+          {editButton}
+        </div>
+        
+        {/* Display proof text if available */}
+        {report.proof && report.proof.text && (
+          <div className="mt-2 text-sm bg-gray-50 p-2 rounded">
+            <div className="font-medium">Admin Update:</div>
+            <p>{report.proof.text}</p>
           </div>
         )}
+        
+        {/* Display proof image if available */}
+        {report.proof && report.proof.imageUrl && (
+          <div className="mt-2">
+            <button 
+              onClick={() => window.open(report.proof.imageUrl, '_blank')}
+              className="flex items-center text-blue-600 text-sm"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              View Proof Image
+            </button>
+          </div>
+        )}
+        </div>
       </div>
-    </div>
-  )
+      
+      {/* Status Update Modal */}
+      {showStatusModal && (
+        <StatusUpdateModal
+          report={report}
+          onClose={() => setShowStatusModal(false)}
+          onUpdateStatus={onUpdateStatus}
+        />
+      )}
+    </>)
 }
 
 

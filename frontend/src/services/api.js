@@ -49,9 +49,29 @@ export async function createReport(formData) {
   return data
 }
 
-export async function updateReportStatus(id, status) {
-  const { data } = await api.patch(`/reports/${id}/status`, { status })
-  return data
+export async function updateReportStatus(id, status, proofData) {
+  // If there's proof data, use FormData to handle file upload
+  if (proofData && (proofData.text || proofData.image)) {
+    const formData = new FormData()
+    formData.append('status', status)
+    
+    if (proofData.text) {
+      formData.append('proofText', proofData.text)
+    }
+    
+    if (proofData.image) {
+      formData.append('proofImage', proofData.image)
+    }
+    
+    const { data } = await api.patch(`/reports/${id}/status`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    return data
+  } else {
+    // Simple status update without proof
+    const { data } = await api.patch(`/reports/${id}/status`, { status })
+    return data
+  }
 }
 
 export async function updateReport(id, reportData) {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ReportForm from '../components/ReportForm.jsx'
 import ReportCard from '../components/ReportCard.jsx'
-import { fetchReports, updateReportStatus } from '../services/api.js'
+import { fetchReports, updateReportStatus, deleteReport } from '../services/api.js'
 import { useAuth } from '../services/authContext.jsx'
 
 export default function Dashboard() {
@@ -27,6 +27,17 @@ export default function Dashboard() {
   async function onReportUpdated() {
     await load()
   }
+  
+  async function onDeleteReport(id) {
+    if (window.confirm('Are you sure you want to delete this report?')) {
+      try {
+        await deleteReport(id)
+        setReports(reports.filter(r => r._id !== id))
+      } catch (error) {
+        console.error("Failed to delete report:", error)
+      }
+    }
+  }
 
   const isAdmin = user?.role === 'admin'
 
@@ -41,6 +52,7 @@ export default function Dashboard() {
             canUpdate={isAdmin} 
             onUpdateStatus={onUpdateStatus} 
             onReportUpdated={onReportUpdated}
+            onDelete={!isAdmin && r.user === user?._id ? onDeleteReport : undefined}
           />
         ))}
       </div>

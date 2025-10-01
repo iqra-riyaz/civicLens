@@ -13,8 +13,8 @@ export default function Admin() {
 
   useEffect(() => { load() }, [statusFilter])
 
-  async function onUpdateStatus(id, status) {
-    await updateReportStatus(id, status)
+  async function onUpdateStatus(id, status, proofData) {
+    await updateReportStatus(id, status, proofData)
     await load()
   }
   

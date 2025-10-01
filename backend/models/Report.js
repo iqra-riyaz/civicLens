@@ -23,6 +23,13 @@ const reportSchema = new mongoose.Schema(
     // AI placeholders
     predictedCategory: { type: String },
     predictedSeverity: { type: String },
+    // Admin proof for status updates
+    proof: {
+      text: { type: String, required: false },
+      imageUrl: { type: String, required: false },
+      imagePublicId: { type: String },
+      uploadedAt: { type: Date, default: Date.now }
+    },
   },
   { timestamps: true }
 );

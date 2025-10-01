@@ -110,6 +110,7 @@ function ReportPopup({ report, onReportUpdated }) {
 
 export default function Map({ reports = [], onPickLocation, searchLocation, onReportUpdated }) {
   const [userLocation, setUserLocation] = useState(null);
+  const markersRef = useRef({});
   const center = reports[0]?.location ? [reports[0].location.lat, reports[0].location.lng] : [20, 0]
   
   const handleLocationFound = (location) => {
@@ -123,7 +124,18 @@ export default function Map({ reports = [], onPickLocation, searchLocation, onRe
       <MapController searchLocation={searchLocation} />
       <LocationButton onLocationFound={handleLocationFound} />
       {reports.map((r) => (
-        <Marker key={r._id} position={[r.location.lat, r.location.lng]} icon={createSeverityIcon(r.urgency, r.category)}>
+        <Marker 
+          key={r._id} 
+          position={[r.location.lat, r.location.lng]} 
+          icon={createSeverityIcon(r.urgency, r.category)}
+          ref={(ref) => {
+            if (ref) {
+              markersRef.current[r._id] = ref;
+            } else if (markersRef.current[r._id]) {
+              delete markersRef.current[r._id];
+            }
+          }}
+        >
           <Popup>
             <ReportPopup report={r} onReportUpdated={onReportUpdated} />
           </Popup>

@@ -15,7 +15,11 @@ export default function Profile() {
     try {
       setLoading(true)
       const data = await fetchMyReports()
-      setReports(data)
+      // Sort reports by updatedAt (newest first)
+      const sortedReports = [...data].sort((a, b) => 
+        new Date(b.updatedAt) - new Date(a.updatedAt)
+      )
+      setReports(sortedReports)
     } catch (error) {
       console.error("Failed to fetch reports:", error)
     } finally {
@@ -70,30 +74,20 @@ export default function Profile() {
         ) : (
           <div className="grid gap-4">
             {reports.map(report => (
-              <div key={report._id} className="bg-white p-4 rounded border flex gap-4">
-                {report.imageUrl && <img src={report.imageUrl} className="w-32 h-24 object-cover rounded" />}
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">{report.title}</h3>
-                    <span className="text-xs px-2 py-1 bg-gray-100 rounded">{report.status}</span>
-                  </div>
-                  <p className="text-sm text-gray-700">{report.description}</p>
-                  <div className="text-sm mt-1">{report.customCategory ? report.customCategory : report.category} • {report.urgency}</div>
-                  <div className="mt-3 flex gap-2">
+              <div key={report._id}>
+                <ReportCard 
+                  report={report}
+                  onDelete={handleDelete}
+                  onReportUpdated={() => loadReports()}
+                  editButton={
                     <button 
                       onClick={() => handleEdit(report)} 
                       className="px-3 py-1 bg-blue-600 text-white text-sm rounded"
                     >
                       Edit
                     </button>
-                    <button 
-                      onClick={() => handleDelete(report._id)} 
-                      className="px-3 py-1 bg-red-600 text-white text-sm rounded"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
+                  }
+                />
               </div>
             ))}
           </div>
