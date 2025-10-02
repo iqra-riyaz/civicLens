@@ -120,7 +120,16 @@ export default function Map({ reports = [], onPickLocation, searchLocation, onRe
   };
   
   return (
-    <MapContainer center={center} zoom={3} style={{ height: '400px', width: '100%' }}>
+    <MapContainer 
+      center={center} 
+      zoom={3} 
+      style={{ height: '400px', width: '100%' }}
+      worldCopyJump={false}
+      minZoom={2}
+      maxBounds={[
+        [-90, -180],
+        [90, 180]
+      ]}>
       <LayersControl position="bottomright">
         {/* Default: Carto Voyager (colorful, English-only) */}
         <BaseLayer checked name="Default">
