@@ -1,14 +1,18 @@
-## Why CivicLens?  
-CivicLens bridges communities and authorities, enabling faster, smarter, and more transparent action on civic issues.  
-It raises awareness, empowers citizens to report problems, and helps authorities respond efficiently, fostering safer and better-managed neighborhoods.  
+## CivicLens
 
-## Key Features  
-- **Secure Reporting** – Protects user data while ensuring accountability.  
-- **Interactive Map** – Visualizes reports in real time for quick understanding.  
-- **Advanced Filters** – Sort reports by type, priority, or location.  
-- **Admin Dashboard** – Monitor, manage, and act on reports seamlessly.  
-- **Community Empowerment** – Engages citizens, raises awareness, and contributes to a safer, organized environment.  
+CivicLens bridges communities and authorities, enabling faster, smarter, and more transparent action on civic issues.
+It raises awareness, empowers citizens to report problems, and helps authorities respond efficiently, fostering safer and better-managed neighborhoods.
 
+## Key Features
+- **Secure Reporting** – Protects user data while ensuring accountability.
+- **Interactive Map** – Visualizes reports in real time for quick understanding.
+  - **Multiple Basemaps**: Switch between Default (Carto Voyager) and Satellite (Esri World Imagery) views.
+  - **Layer Control**: Easily toggle between map styles with a control panel in the bottom-right corner.
+- **Advanced Filters** – Sort reports by type, priority, or location.
+- **Admin Dashboard** – Monitor, manage, and act on reports seamlessly.
+- **Community Empowerment** – Engages citizens, raises awareness, and contributes to a safer, organized environment.
+- **Report Deletion**: Users can delete their own reports with a confirmation step, and markers are automatically removed from the map.
+- **Admin Status & Proof**: Report cards now display admin status and proof, with reports sorted by `updatedAt` in the user profile.
 
 ## CivicLens Backend
 
@@ -37,6 +41,7 @@ npm run dev
 - `GET /api/reports/mine` (auth)
 - `POST /api/reports` (auth, multipart with `image`) fields: `title, description, category, urgency, lat, lng`
 - `PATCH /api/reports/:id/status` (auth + admin)
+- `DELETE /api/reports/:id` (auth + owner)
 
 ### Notes
 
@@ -75,7 +80,6 @@ npm install
 ```bash
 npm run dev
 ```
-
 
 
 
