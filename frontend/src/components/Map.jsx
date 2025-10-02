@@ -1,9 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap, LayersControl, LayerGroup } from 'react-leaflet'
 import L from 'leaflet'
 import LocationButton from './LocationButton.jsx'
 import { upvoteReport } from '../services/api'
 import { useAuth } from '../services/authContext'
+
+const { BaseLayer } = LayersControl
 
 // Style config for severity markers (clean circular icons)
 function styleForUrgency(urgency) {
@@ -119,7 +121,24 @@ export default function Map({ reports = [], onPickLocation, searchLocation, onRe
   
   return (
     <MapContainer center={center} zoom={3} style={{ height: '400px', width: '100%' }}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap contributors" />
+      <LayersControl position="bottomright">
+        {/* Default: Carto Voyager (colorful, English-only) */}
+        <BaseLayer checked name="Default">
+          <TileLayer 
+            url="https://cartodb-basemaps-a.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.png" 
+            attribution="&copy; OpenStreetMap contributors, &copy; CARTO" 
+          />
+        </BaseLayer>
+        
+        {/* Satellite View (Esri World Imagery) */}
+        <BaseLayer name="Satellite">
+          <TileLayer 
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" 
+            attribution="&copy; Esri, Maxar, Earthstar Geographics, and the GIS User Community" 
+          />
+        </BaseLayer>
+      </LayersControl>
+      
       {onPickLocation && <LocationPicker onPick={onPickLocation} />}
       <MapController searchLocation={searchLocation} />
       <LocationButton onLocationFound={handleLocationFound} />
